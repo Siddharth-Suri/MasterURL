@@ -1,0 +1,15 @@
+{
+    "name": "tryingbun",
+    "module": "index.ts",
+    "type": "module",
+    "private": true,
+    "devDependencies": {
+        "@types/bun": "latest"
+    },
+    "scripts": {
+        "dev": "tsc -b && bun run src/index.ts"
+    },
+    "peerDependencies": {
+        "typescript": "^5"
+    }
+}
