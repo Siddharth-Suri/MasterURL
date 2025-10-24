@@ -4,12 +4,16 @@
     "type": "module",
     "private": true,
     "devDependencies": {
-        "@types/bun": "latest"
+        "@types/bun": "latest",
+        "prisma": "^6.18.0"
     },
     "scripts": {
         "dev": "bun run src/index.ts && bun run src/w"
     },
     "peerDependencies": {
         "typescript": "^5"
+    },
+    "dependencies": {
+        "@prisma/client": "^6.18.0"
     }
 }
