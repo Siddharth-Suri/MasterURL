@@ -7,7 +7,7 @@
         "@types/bun": "latest"
     },
     "scripts": {
-        "dev": "tsc -b && bun run src/index.ts"
+        "dev": "bun run src/index.ts && bun run src/w"
     },
     "peerDependencies": {
         "typescript": "^5"

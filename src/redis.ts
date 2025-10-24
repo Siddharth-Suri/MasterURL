@@ -1,4 +1,4 @@
-import { redis, RedisClient } from "bun";
+import { RedisClient } from "bun";
 const URL: string = "redis://localhost:6379";
 
 class RedisInstance {
@@ -7,18 +7,21 @@ class RedisInstance {
 
     private constructor() {
         this.connection = new RedisClient(URL);
+        console.log("Constructor called: " + this.connection);
     }
 
     public static createInstance() {
         if (!RedisInstance.instance) {
             RedisInstance.instance = new RedisInstance();
-        } else return RedisInstance.instance;
+        }
+        return RedisInstance.instance;
     }
 
-    public getConnection() {
+    public async getConnection() {
+        await this.connection.connect();
         return this.connection;
     }
 }
 
 export const redisSingletonInstance =
-    RedisInstance.createInstance()?.getConnection();
+    await RedisInstance.createInstance().getConnection();
