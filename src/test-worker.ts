@@ -1,1 +1,1 @@
-console.log("Worker started");
+import { Prisma } from "./generated/prisma/client";

@@ -1,5 +1,5 @@
 import { redisSingletonInstance } from "./redis";
-import { PrismaConnection as Prisma } from "./singleton";
+import { PrismaConnection } from "./singleton";
 
 console.log("Worker is now active ");
 export const redis = redisSingletonInstance;
@@ -13,35 +13,38 @@ export const redis = redisSingletonInstance;
             if (data) {
                 const [key, message] = data;
                 console.log(message);
-                const { value, originalURL } = JSON.parse(message);
+                const { hash, originalURL } = JSON.parse(message);
                 try {
-                    const alreadyExists = await Prisma.eachURL.findUnique({
+                    const Prisma = PrismaConnection();
+                    const data = await Prisma.eachUrl.upsert({
                         where: {
                             originalURL,
                         },
+                        update: {
+                            hash: {
+                                connectOrCreate: {
+                                    where: { value: hash },
+                                    create: {
+                                        origin: originalURL,
+                                        value: hash,
+                                    },
+                                },
+                            },
+                        },
+                        create: {
+                            originalURL,
+                            hash: {
+                                create: {
+                                    origin: originalURL,
+                                    value: hash,
+                                },
+                            },
+                        },
+                        include: { hash: true },
                     });
-                    if (!alreadyExists) {
-                        Prisma.eachURL.create({
-                            data: {
-                                originalURL,
-                                hashes: {
-                                    create: { value },
-                                },
-                            },
-                        });
-                    } else {
-                        Prisma.hash.create({
-                            data: {
-                                value: value,
-                                origin: originalURL,
-                                eachURL: {
-                                    connect: { originalURL },
-                                },
-                            },
-                        });
-                    }
+                    console.log(data);
                 } catch (e) {
-                    console.log("Prisma is down");
+                    console.log("Database is down " + e);
                 }
                 console.log("Just popped:", message);
             } else {

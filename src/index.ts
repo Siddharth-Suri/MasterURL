@@ -9,7 +9,7 @@ console.log("Main running");
 export default {
     port: 3000,
     async fetch(req: Request) {
-        const hashes: string[] = computeHash();
+        const hashes = computeHash();
         console.log(req.method);
         let body: any;
         if (req.method != "GET") {
@@ -47,7 +47,7 @@ export default {
 
                 redis.lpush(
                     "hashValue",
-                    JSON.stringify({ value, originalURL })
+                    JSON.stringify({ hash: value, originalURL })
                 );
 
                 return new Response(

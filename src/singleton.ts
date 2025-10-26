@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "./generated/prisma/client";
 
 class PrismaSingleton {
     private static connection: PrismaClient; // wtf PrismaClient has been returned as any so i will do the same would be an object imo
@@ -22,5 +22,8 @@ class PrismaSingleton {
     }
 }
 
-export const PrismaConnection: PrismaClient =
-    PrismaSingleton.getInstance().getConnection();
+export const PrismaConnection = () => {
+    const Connection: PrismaClient =
+        PrismaSingleton.getInstance().getConnection();
+    return Connection;
+};

@@ -17,12 +17,12 @@ datasource db {
 model EachUrl{
   id          Int         @id @default(autoincrement())
   originalURL String      @unique
-  hash        Hash[]
+  hash        Hash[]      
 }
 
 model Hash {
   id          Int     @id @default(autoincrement())
-  value       String  
+  value       String  @unique
   origin      String
   eachUrlId   Int     
   eachUrl     EachUrl @relation(fields: [eachUrlId], references: [id])
