@@ -1,26 +1,28 @@
 import { computeHash } from "./hash";
 import { redisSingletonInstance } from "./redis";
 
-console.log("worker");
-
-const worker = new Worker(new URL("./worker.ts", import.meta.url).href, {
+const worker = new Worker(new URL("./worker.ts", import.meta.url), {
     type: "module",
 });
-
-worker.onmessage = (event) => {
-    console.log(event.data);
-};
-console.log("worker complete");
+console.log("Main running");
 
 export default {
     port: 3000,
     async fetch(req: Request) {
         const hashes: string[] = computeHash();
-        console.log("here");
+        console.log(req.method);
+        let body: any;
+        if (req.method != "GET") {
+            console.log(req.method);
+            body = await req.json();
+        }
 
         if (!redisSingletonInstance) {
             console.log("Redis is down at the moment");
-            return new Response("Redis is down");
+            return new Response(JSON.stringify({ error: "Redis is down" }), {
+                status: 503,
+                headers: { "Content-Type": "application/json" },
+            });
         }
 
         const redis = redisSingletonInstance;
@@ -28,22 +30,55 @@ export default {
         const url = new URL(req.url);
         const { pathname } = url;
         switch (pathname) {
-            case "/":
-                console.log("reached endpoint");
+            case "/api/shorten":
+                const { originalURL } = body;
+
+                if (!body)
+                    return new Response(
+                        JSON.stringify({ error: "No URL was sent" }),
+                        {
+                            status: 400,
+                            headers: { "Content-Type": "application/json" },
+                        }
+                    );
+
+                console.log("Reached endpoint");
                 const value = hashes.pop() as string;
-                redis.lpush("hashValue", value);
+
+                redis.lpush(
+                    "hashValue",
+                    JSON.stringify({ value, originalURL })
+                );
+
+                return new Response(
+                    JSON.stringify({
+                        msg: "Shortened your url",
+                        hash: { value },
+                    }),
+                    {
+                        status: 200,
+                        headers: { "Content-Type": "application/json" },
+                    }
+                );
+
+            case "api/delete":
                 return new Response("Reached");
 
-            case "/delete":
+            case "api/list":
                 return new Response("Reached");
 
-            case "/list":
-                return new Response("Reached");
-
-            case "/search/":
+            case "api/search/":
                 return new Response("Reached");
             default:
-                return new Response("Not found", { status: 404 });
+                return new Response(
+                    JSON.stringify({
+                        err: "No endpoint exists ",
+                    }),
+                    {
+                        headers: { "Content-Type": "application/json" },
+                        status: 404,
+                    }
+                );
         }
         return;
     },

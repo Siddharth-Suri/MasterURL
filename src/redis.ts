@@ -6,8 +6,8 @@ class RedisInstance {
     private connection: Bun.RedisClient;
 
     private constructor() {
+        console.log("Constructor");
         this.connection = new RedisClient(URL);
-        console.log("Constructor called: " + this.connection);
     }
 
     public static createInstance() {
@@ -25,3 +25,5 @@ class RedisInstance {
 
 export const redisSingletonInstance =
     await RedisInstance.createInstance().getConnection();
+
+console.log("Instance");

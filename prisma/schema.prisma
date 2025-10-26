@@ -20,9 +20,10 @@ model EachUrl{
   hash        Hash[]
 }
 
-model Hash{
-  id            Int         @id @default(autoincrement())
-  origin        String
-  originalURL   EachUrl     @relation(fields: [origin],references: [originalURL])
-
+model Hash {
+  id          Int     @id @default(autoincrement())
+  value       String  
+  origin      String
+  eachUrlId   Int     
+  eachUrl     EachUrl @relation(fields: [eachUrlId], references: [id])
 }

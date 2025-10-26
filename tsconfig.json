@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         // Environment setup & latest features
+        "types": ["bun-types", "@prisma/client"],
         "lib": ["ESNext"],
         "target": "ESNext",
         "module": "esnext",
@@ -13,10 +14,6 @@
         "allowImportingTsExtensions": true,
         "verbatimModuleSyntax": true,
         "noEmit": true,
-
-        // Added
-        "rootDir": "./src",
-        "outDir": "./dist",
 
         // Best practices
         "strict": true,
