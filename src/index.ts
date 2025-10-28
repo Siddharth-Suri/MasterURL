@@ -1,10 +1,9 @@
 import { computeHash } from "./hash";
 import { redisSingletonInstance } from "./redis";
 
-const worker = new Worker(new URL("./worker.ts", import.meta.url), {
+const addWorker = new Worker(new URL("./add-worker.ts", import.meta.url), {
     type: "module",
 });
-console.log("Main running");
 
 export default {
     port: 3000,
@@ -13,7 +12,6 @@ export default {
         console.log(req.method);
         let body: any;
         if (req.method != "GET") {
-            console.log(req.method);
             body = await req.json();
         }
 
@@ -62,6 +60,8 @@ export default {
                 );
 
             case "api/delete":
+                const { hash } = body;
+
                 return new Response("Reached");
 
             case "api/list":
@@ -80,6 +80,5 @@ export default {
                     }
                 );
         }
-        return;
     },
 };

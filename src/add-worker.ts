@@ -14,6 +14,8 @@ export const redis = redisSingletonInstance;
                 const [key, message] = data;
                 console.log(message);
                 const { hash, originalURL } = JSON.parse(message);
+                const cache = await redis.sadd(`cached:${originalURL}`, hash);
+
                 try {
                     const Prisma = PrismaConnection();
                     const data = await Prisma.eachUrl.upsert({
